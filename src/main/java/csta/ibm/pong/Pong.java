@@ -1,8 +1,8 @@
 /*
-* Author: Cary
-* Description: A Pong game where 2 players can play on the same keyboard.
-* Player wins if the other player's paddle missed the ball
-* */
+ * Author: Cary
+ * Description: A Pong game where 2 players can play on the same keyboard.
+ * Player wins if the other player's paddle missed the ball
+ * */
 
 package csta.ibm.pong;  // This can access package-private classes like _WinDialog
 
@@ -21,7 +21,7 @@ import java.net.MalformedURLException;
 import java.util.ArrayList;
 
 /**
- * <h1>Pong</h1>
+ * <h1>Pong Game</h1>
  * <p>The main class for the Pong game. It extends the Game class and implements the game logic, including player
  * controls, ball movement, collision detection, and score tracking.</p>
  *
@@ -67,6 +67,7 @@ public class Pong extends Game {
 
     // First player reaching this scores wins
     private final static int WIN_SCORE = 6;
+    private int serveDir = 1;
     private int p1Score = 0;
     private int p2Score = 0;
 
@@ -202,8 +203,8 @@ public class Pong extends Game {
         int ballTop = pivotOffset(CENTER_Y, ballRadius);
         ball.setSize(ballRadius, ballRadius);
         ball.setX(ballLeft); ball.setY(ballTop);
-        int scaledDx = (int) (-5 * scaleFactor);
-        ball.setVelocity(scaledDx, 0);
+        int xSpeed = (int) (5 * scaleFactor);  // Magnitude of the ball's x velocity
+        ball.setVelocity(serveDir * xSpeed, 0);  // Apply direction to the x speed
         // Paddles setup
         int initialPaddleSpeed = (int) (5 * scaleFactor);  // Scale the paddle speed based on the window size
         int paddleWidth = (int) (10 * scaleFactor);
@@ -272,7 +273,7 @@ public class Pong extends Game {
 
     /**
      * Initialize all objects and call resetPosition to set the initial positions of the ball and paddles.
-     * Also sets up the score display.
+     * Also sets up the score display. The ball will have a random serve direction at the start of the program
      * */
     @Override
     public void setup() {
@@ -296,6 +297,12 @@ public class Pong extends Game {
 
         // Initialize game objects
         ball = new Ball();
+        double serveChance = Math.random();
+        if (serveChance > 0.5) {
+            serveDir = 1;
+        } else {
+            serveDir = -1;
+        }
         add(ball);
 
         player1 = new Paddle();
@@ -387,37 +394,48 @@ public class Pong extends Game {
     }
 
     /**
-     * Check for scoring and wining conditions with all types of balls
+     * When p1 scored, increase their score and reward them to have the next serve, and plays sound effect
+     *
+     * @param boundDir the bound's direction relating to the center of the screen. 0 if not out of bound
+     * */
+    private void playerScored(int boundDir) {
+        if (boundDir == 0)
+            return;
+        if (boundDir == 1)   // Out of right bound, p1 scored
+            p1Score++;
+        else  // Out of left bound, p2 scored
+            p2Score++;
+        serveDir = boundDir;  // Reward them by serving the ball in p2's direction
+        playSound(SCORING_SFX_FILE);  // Celebration sfx
+        reset();
+    }
+
+    /**
+     * Check the ball is out of which bound. -1 for left bound. 1 for right bound. 0 if not out of bound yet
+     *
+     * @return An integer represents the direction of the bound that the ball or phantom gets out of.
+     * */
+    private int outOfBoundsDir() {
+        // Check for phantoms
+        for (int i = ballPhantoms.size() -1; i >= 0; i--) {
+            Ball phantom = ballPhantoms.get(i);
+            // Out of left bound
+            if (phantom.getX() <= 0)
+                return -1;
+            // Out of right bound
+            if (phantom.getX() + phantom.getWidth() >= getFieldWidth())
+                return 1;
+        }
+        // Check for ball separately because ballPhantoms might be empty
+        if (ball.getX() <= 0) return -1;
+        if (ball.getX() + ball.getWidth() >= getFieldWidth()) return 1;
+        return 0;
+    }
+
+    /**
+     * Check for wining conditions with all types of balls
      * */
     private void checkWin() {
-        // Out of left bound: player 2 gets score
-        for (int i = ballPhantoms.size() -1; i >= 0; i--) {  // Check for phantoms
-            Ball phantom = ballPhantoms.get(i);
-            if (phantom.getX() <= 0) {
-                p2Score++;
-                reset();  // Reset game board
-                playSound(SCORING_SFX_FILE);
-            }
-            // Out of right bound: player 1 gets score
-            if (ball.getX() + ball.getWidth() >= getFieldWidth() ||
-            phantom.getX() + phantom.getWidth() >= getFieldWidth()) {
-                p1Score++;
-                reset();
-                playSound(SCORING_SFX_FILE);
-            }
-        }
-        // Check for ball
-        if (ball.getX() <= 0) {
-            p2Score++;
-            reset();
-            playSound(SCORING_SFX_FILE);
-        }
-        if (ball.getX() + ball.getWidth() >= getFieldWidth()) {
-            p1Score++;
-            reset();
-            playSound(SCORING_SFX_FILE);
-        }
-
         // Check if any player won
         if (p1Score >= WIN_SCORE) {
             stopGame();  // Pause the game
@@ -535,6 +553,8 @@ public class Pong extends Game {
             powerUpCollision();
             ballBounce();
             phantomCollision();
+            // Check for scoring
+            playerScored(outOfBoundsDir());
             // Winning conditions
             checkWin();
             // System.out.println(phantomPowerUp.getX() + " " + phantomPowerUp.getY());
@@ -544,14 +564,14 @@ public class Pong extends Game {
     public static void main(String[] args) {
         // Instructions before the game starts
         String instructions = "WELCOME TO PONG!\n\n" +
-                                "Player 1 (Left Paddle):\n" +
-                                "A - Move Up\n" +
-                                "Z - Move Down\n\n" +
-                                "Player 2 (Right Paddle):\n" +
-                                "K - Move Up\n" +
-                                "M - Move Down\n\n" +
-                                "First player to reach" + WIN_SCORE + "points wins!\n\n" +
-                                "Click OK or close this window to start the game.";
+                "Player 1 (Left Paddle):\n" +
+                "A - Move Up\n" +
+                "Z - Move Down\n\n" +
+                "Player 2 (Right Paddle):\n" +
+                "K - Move Up\n" +
+                "M - Move Down\n\n" +
+                "First player to reach" + WIN_SCORE + "points wins!\n\n" +
+                "Click OK or close this window to start the game.";
         // Display instructions
         JOptionPane.showMessageDialog(
                 null,

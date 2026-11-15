@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component jdk="corretto-1.8" jdk_type="JavaSDK">
+	<contentEntry url="file://$MODULE_DIR$">
+		<excludeFolder url="file://$MODULE_DIR$/target"/>
+	</contentEntry>
+	<contentEntry url="file://$MODULE_DIR$"/>
+	<lib name="csta.ibm.pong.v15.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/src/main/java/csta.ibm.pong.v15.jar!/"/>
+	</lib>
+</component>

@@ -8,6 +8,7 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 
 /**
+ * <h1>Phantom Power Up</h1>
  * <p>the PhantomPowerUp class represents the entities that spawns phantom balls when a normal ball collides with
  * it. The hitbox of the power up object is triggered by its visibility</p>
  *

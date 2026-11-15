@@ -7,6 +7,7 @@ package csta.ibm.pong;
 import java.awt.*;
 
 /**
+ * <h1>Ball</h1>
  * <p>A class representing the ball in the Pong game. It extends the GameObject class and handles the ball's movement,
  * velocity, and collision behavior with paddles and walls.</p>
  *
