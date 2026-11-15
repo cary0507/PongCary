@@ -12,6 +12,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -46,6 +48,10 @@ public class Pong extends Game {
     private PhantomPowerUp phantomPowerUp;
     private JLabel scores;  // Display score
     private JLabel readyMsg;
+
+    // Custom keybind
+    private boolean aKeyPressed = false;
+    private boolean kKeyPressed = false;
 
     // Game pausing
     private static boolean gettingReady = false;
@@ -268,6 +274,10 @@ public class Pong extends Game {
         scaleFactor = calculateScaleFactor();
         CENTER_X = getFieldWidth() / 2;
         CENTER_Y = getFieldHeight() / 2;
+
+        // Add key press events
+        addKeyPress();
+
         // Text setup
         scores = new JLabel();
         scores.setHorizontalAlignment(SwingConstants.CENTER);
@@ -416,18 +426,56 @@ public class Pong extends Game {
     }
 
     /**
+     * Add key press events to the Pong game, called by setup
+     * Instead of pressing z/n to go up, x/m to go down, modify it to press a/k to go up, and z/m to go down
+     * Resources found in Google Classroom
+     * */
+    public void addKeyPress() {
+        // Added A key and Z key to move up
+        addKeyListener(
+                new KeyListener() {
+                    public void keyTyped(KeyEvent e) {}
+
+                    public void keyPressed(KeyEvent e) {
+                        char pressed = Character.toUpperCase(e.getKeyChar());  // Case-insensitive
+                        switch (pressed) {
+                            case 'A':
+                                aKeyPressed = true;
+                                break;
+                            case 'K':
+                                kKeyPressed = true;
+                                break;
+                        }
+                    }
+
+                    public void keyReleased(KeyEvent e) {
+                        char released = Character.toUpperCase(e.getKeyChar());  // Case-insensitive
+                        switch (released) {
+                            case 'A':
+                                aKeyPressed = false;
+                                break;
+                            case 'K':
+                                kKeyPressed = false;
+                                break;
+                        }
+                    }
+                }
+        );
+    }
+
+    /**
      * Check keypress for both players to move each paddle accordingly
      * */
     private void checkKeypress() {
         // Player 1 keypress
-        if (ZKeyPressed()) {
+        if (aKeyPressed) {
             if (player1.getY() <= 0) {  // Stop moving and restrain to the top of the screen
                 player1.setY(0);
                 player1.atRest();  // Stop moving
             } else {
                 player1.moveUp();
             }
-        } else if (XKeyPressed()) {
+        } else if (ZKeyPressed()) {
             if (player1.getY() + player1.getHeight() >= getFieldHeight()) {  // Restrain to the bottom
                 player1.setY(getFieldHeight() - player1.getHeight());
                 player1.atRest();
@@ -438,7 +486,7 @@ public class Pong extends Game {
             player1.atRest();
         }
         // Player 2 keypress
-        if (NKeyPressed()) {
+        if (kKeyPressed) {
             if (player2.getY() <= 0) {
                 player2.setY(0);
                 player2.atRest();
