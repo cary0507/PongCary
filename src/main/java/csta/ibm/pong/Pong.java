@@ -66,7 +66,7 @@ public class Pong extends Game {
     private int CENTER_Y;
 
     // First player reaching this scores wins
-    private final int WIN_SCORE = 6;
+    private final static int WIN_SCORE = 6;
     private int p1Score = 0;
     private int p2Score = 0;
 
@@ -536,6 +536,24 @@ public class Pong extends Game {
     }
 
     public static void main(String[] args) {
+        // Instructions before the game starts
+        String instructions = "WELCOME TO PONG!\n\n" +
+                                "Player 1 (Left Paddle):\n" +
+                                "A - Move Up\n" +
+                                "Z - Move Down\n\n" +
+                                "Player 2 (Right Paddle):\n" +
+                                "K - Move Up\n" +
+                                "M - Move Down\n\n" +
+                                "First player to reach" + WIN_SCORE + "points wins!\n\n" +
+                                "Click OK or close this window to start the game.";
+        // Display instructions
+        JOptionPane.showMessageDialog(
+                null,
+                instructions,
+                "How to Play",
+                JOptionPane.INFORMATION_MESSAGE
+        );
+        // Initialize the Game and game screen
         Pong p = new Pong();
         p.resize(1200, 840);
         p.setVisible(true);
