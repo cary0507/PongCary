@@ -59,6 +59,7 @@ public class Paddle extends GameObject {
      * */
     @Override
     public void act() {
+        if (Pong.inPause()) return;
         int newY = getY() + dy;
         setY(newY);
     }

@@ -108,6 +108,7 @@ public class PhantomPowerUp extends GameObject {
      * */
     @Override
     public void act() {
+        if (Pong.inPause()) return;
         if (!isVisible()) {  // Trying to appear on the screen
             // (int) (Math.random() * (max - min + 1)) + min => (int) (Math.random() *  ̶(̶appearChance  ̶(̶-̶1̶)̶ ̶+̶ ̶1̶ ̶)̶) + 1
             int roll = (int) (Math.random() * appearChance) + 1;

@@ -47,6 +47,11 @@ public class Pong extends Game {
     private JLabel scores;  // Display score
     private JLabel readyMsg;
 
+    // Game pausing
+    private static boolean gettingReady = false;
+    private long readyStartTime;
+    private final long READY_DURATION = 3000;
+
     // Base resolution for the game
     private final int RES_WIDTH = 600;
     private final int RES_HEIGHT = 420;
@@ -139,14 +144,20 @@ public class Pong extends Game {
         return img;
     }
 
-    /**
-     * Pause the game for 3 seconds and show the ready text to make the players get ready
-     * */
-    public void gameReady() throws InterruptedException {
-        readyMsg.setVisible(true);
-        repaint();
-        Thread.sleep(3000);
-        readyMsg.setVisible(false);
+//    /**
+//     * Pause the game for 3 seconds and show the ready text to make the players get ready
+//     * */
+//    public void gameReady() {
+//        gettingReady = true;
+//        readyStartTime = System.currentTimeMillis();
+//
+//        readyMsg.setVisible(true);
+//        stopGame();
+//        repaint();
+//    }
+
+    public static boolean inPause() {
+        return gettingReady;
     }
 
     /**
@@ -172,6 +183,7 @@ public class Pong extends Game {
         readyMsg.setFont(new Font("Arial", Font.BOLD, fontSize));
         readyMsg.setForeground(Color.YELLOW);
         readyMsg.setBounds(readyLeft, readyTop, readyWidth, readyHeight);
+
         // Ball setup
         int ballRadius = (int) (10 * scaleFactor);  // Scale the ball size based on the window size
         int ballLeft = pivotOffset(CENTER_X, ballRadius);  // Pivot ball to the screen center
@@ -206,11 +218,14 @@ public class Pong extends Game {
                 lowerBoundX, lowerBoundY, upperBoundX, upperBoundY
         );
         // Get ready
-        try {
-            gameReady();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        gettingReady = true;
+        readyStartTime = System.currentTimeMillis();
+//        gameReady();
+//        try {
+//            gameReady();
+//        } catch (InterruptedException e) {
+//            e.printStackTrace();
+//        }
     }
 
     /**
@@ -257,8 +272,10 @@ public class Pong extends Game {
         scores = new JLabel();
         scores.setHorizontalAlignment(SwingConstants.CENTER);
         add(scores);  // Add to board
+
         readyMsg = new JLabel("GET READY");
         readyMsg.setHorizontalAlignment(SwingConstants.CENTER);
+        readyMsg.setVisible(false);
         add(readyMsg);
 
         // Initialize game objects
@@ -448,15 +465,26 @@ public class Pong extends Game {
     public void act() {
         // Display text and repaint the canva
         scores.setText("Player 1   " + p1Score + " | " + p2Score + "   Player 2");
-        repaint();
-        checkKeypress();
-        // Collisions
-        powerUpCollision();
-        ballBounce();
-        phantomCollision();
-        // Winning conditions
-        checkWin();
-        // System.out.println(phantomPowerUp.getX() + " " + phantomPowerUp.getY());
+        // Wait 3 seconds before starting the round
+        if (gettingReady) {
+            long curTime = System.currentTimeMillis();
+            long timePassed = curTime - readyStartTime;
+            readyMsg.setVisible(true);
+            if (timePassed >= READY_DURATION) {
+                readyMsg.setVisible(false);
+                gettingReady = false;
+            }
+        } else {
+            repaint();
+            checkKeypress();
+            // Collisions
+            powerUpCollision();
+            ballBounce();
+            phantomCollision();
+            // Winning conditions
+            checkWin();
+            // System.out.println(phantomPowerUp.getX() + " " + phantomPowerUp.getY());
+        }
     }
 
     public static void main(String[] args) {

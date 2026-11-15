@@ -88,6 +88,7 @@ public class Ball extends GameObject {
      * */
     @Override
     public void act() {
+        if (Pong.inPause()) return;  // Pause game
         // Get the next position
         int newX = getX() + dx;
         int newY = getY() + dy;
