@@ -34,6 +34,7 @@ public class Ball extends GameObject {
 
     /**
      * Get the horizontal velocity of the ball
+     * @return the dx of this object
      * */
     public int getDX() {
         return dx;
@@ -41,6 +42,7 @@ public class Ball extends GameObject {
 
     /**
      * Get the vertical velocity of the ball
+     * @return the dy of this object
      * */
     public int getDY() {
         return dy;
@@ -51,6 +53,7 @@ public class Ball extends GameObject {
      * If ball and paddle have the same direction for dy, the ball's dy will increase, otherwise it will set ball's
      * dy to the paddle's dy
      * <a href="https://www.mathsisfun.com/algebra/vectors-dot-product.html">Reference for dot product</a>
+     *
      * @param paddleDY the vertical velocity of the paddle
      * */
     public void bouncePaddle(int paddleDY) {

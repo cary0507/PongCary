@@ -61,6 +61,7 @@ public class PhantomPowerUp extends GameObject {
      * and opposite dy comparing to the trigger ball
      *
      * @param triggerBall the ball who triggers this power up (Should be the main ball)
+     * @return the phantom generated
      * */
     public Ball spawnPhantom(Ball triggerBall) {
         Ball phantom = new Ball();
@@ -96,6 +97,9 @@ public class PhantomPowerUp extends GameObject {
     /**
      * Override the original collides so that it will only continue checking hitbox when the power up object is
      * visible
+     *
+     * @param o the GameObject being checked
+     * @return true if this object is visible and collides with GameObject o, false otherwise
      * */
     @Override
     public boolean collides(GameObject o)  {

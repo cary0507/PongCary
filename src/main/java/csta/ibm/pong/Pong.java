@@ -77,6 +77,10 @@ public class Pong extends Game {
 
     /**
      * Quick way to calculate the left or top position from a pivot
+     *
+     * @param pivot the component vector of the pivot point (x or y)
+     * @param size the size of the object
+     * @return the left or top position of that object offsetting from the pivot
      * */
     private static int pivotOffset(int pivot, int size) {
         return pivot - size / 2;
@@ -87,6 +91,8 @@ public class Pong extends Game {
      * scale the size and speed of game objects to maintain consistent gameplay across different window sizes.
      * The scale factor is the minimum of the width scale and height scale, ensuring that the game objects fit within
      * the window without distortion.
+     *
+     * @return the scale factor as a floating number
      * */
     private double calculateScaleFactor() {
         double widthScale = (double) getFieldWidth() / RES_WIDTH;
